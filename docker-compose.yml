@@ -1,0 +1,2 @@
+# Docker Compose Configuration
+# Services for PostgreSQL with pgvector extension and API server.

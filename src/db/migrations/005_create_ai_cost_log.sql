@@ -1,0 +1,2 @@
+-- Migration: 005_create_ai_cost_log.sql
+-- Creates ai_cost_log table to track per-call AI costs, model usage, token/image counts, and operations.

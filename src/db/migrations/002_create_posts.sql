@@ -1,0 +1,2 @@
+-- Migration: 002_create_posts.sql
+-- Creates posts table to store blog post content, titles, target subjects/categories, and post text embeddings.

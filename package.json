@@ -1,0 +1,47 @@
+{
+  "name": "flyrank-capstone-imagerelevance",
+  "version": "1.0.0",
+  "description": "AI Image Understanding & Content Matching Engine with Mismatch Guard Safety Layer",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "worker": "tsx scripts/run-worker.ts",
+    "seed": "tsx src/db/seed.ts",
+    "eval": "tsx tests/eval/precision.eval.ts",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "ai",
+    "vision",
+    "embeddings",
+    "semantic-matching",
+    "mismatch-guard",
+    "backend"
+  ],
+  "author": "FlyRank Backend Intern",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^0.1.2",
+    "better-sqlite3": "^11.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "pgvector": "^0.2.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.4",
+    "@types/pg": "^8.11.11",
+    "@types/supertest": "^6.0.2",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}

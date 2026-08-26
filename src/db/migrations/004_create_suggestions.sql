@@ -1,0 +1,2 @@
+-- Migration: 004_create_suggestions.sql
+-- Creates suggestions table to record image-to-post matching candidates, guard status (MATCHED/REJECTED), rejections reasons, and human approvals.

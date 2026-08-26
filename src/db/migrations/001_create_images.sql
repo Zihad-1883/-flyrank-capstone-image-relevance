@@ -1,0 +1,2 @@
+-- Migration: 001_create_images.sql
+-- Creates images table to store image metadata, categories, tags JSON, vision confidence, and status flags.

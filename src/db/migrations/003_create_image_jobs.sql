@@ -1,0 +1,2 @@
+-- Migration: 003_create_image_jobs.sql
+-- Creates image_jobs table to track async background batch processing, retry attempts, job statuses, and errors.
