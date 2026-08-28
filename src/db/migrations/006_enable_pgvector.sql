@@ -1,2 +1,0 @@
--- Migration: 006_enable_pgvector.sql
--- Enables the pgvector extension and creates vector distance IVFFlat / HNSW indexes for fast cosine similarity search.
