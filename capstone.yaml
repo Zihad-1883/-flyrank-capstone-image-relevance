@@ -1,2 +1,32 @@
 # Capstone Manifest File
 # Defines entry commands for evaluator: run, seed, test, base_url, and endpoints.
+
+name: image-matching-engine
+version: 1.0.0
+description: AI Image Understanding & Content Matching Engine with Mismatch Guard Safety Layer
+
+commands:
+  install: npm install
+  migrate: npm run migrate
+  seed: npm run seed
+  worker: npm run worker
+  start: npm start
+  dev: npm run dev
+  test: npm test
+  eval: npm run eval
+
+config:
+  port: 5000
+  base_url: http://localhost:5000
+  docs_url: http://localhost:5000/docs
+
+endpoints:
+  upload_image: POST /images/upload
+  list_images: GET /images
+  get_image: GET /images/:id
+  create_post: POST /posts
+  list_posts: GET /posts
+  get_suggestions: GET /posts/:id/suggest
+  list_suggestions_audit: GET /suggestions
+  approve_suggestion: POST /suggestions/:id/approve
+  reject_suggestion: POST /suggestions/:id/reject
