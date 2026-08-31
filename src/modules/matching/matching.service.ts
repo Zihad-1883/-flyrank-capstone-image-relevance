@@ -8,12 +8,12 @@
 import { findPostById } from '../posts/posts.repository.js';
 import { findCandidateImagesByVector, saveSuggestion } from './matching.repository.js';
 import { evaluateMismatchGuard } from './mismatch-guard.js';
-import { SuggestionCandidateResponse } from './matching.types.js';
+import { SuggestionCandidateResponse, SuggestionResponseEnvelope } from './matching.types.js';
 
 export async function suggestImagesForPost(
     postId: number,
     limit: number = 5
-): Promise<SuggestionCandidateResponse[]> {
+): Promise<SuggestionResponseEnvelope> {
     const post = await findPostById(postId);
     if (!post) {
         throw new Error(`Post with ID ${postId} not found`);
@@ -31,7 +31,7 @@ export async function suggestImagesForPost(
 
     const candidates = await findCandidateImagesByVector(embeddingArray, limit);
 
-    const results: SuggestionCandidateResponse[] = [];
+    const suggestions: SuggestionCandidateResponse[] = [];
 
     for (const candidate of candidates) {
         const guardResult = evaluateMismatchGuard({
@@ -48,7 +48,7 @@ export async function suggestImagesForPost(
             guardResult.rejection_reason
         );
 
-        results.push({
+        suggestions.push({
             suggestion_id: suggestionId,
             post_id: post.id,
             image_id: candidate.id,
@@ -64,5 +64,16 @@ export async function suggestImagesForPost(
         });
     }
 
-    return results;
+    const matchedCount = suggestions.filter((s) => s.status === 'MATCHED').length;
+    const hasConfidentMatch = matchedCount > 0;
+    const message = hasConfidentMatch
+        ? `Found ${matchedCount} matching image candidate(s)`
+        : 'No confident match found. Candidates rejected due to low similarity or subject/category mismatch.';
+
+    return {
+        post_id: post.id,
+        has_confident_match: hasConfidentMatch,
+        message,
+        suggestions,
+    };
 }

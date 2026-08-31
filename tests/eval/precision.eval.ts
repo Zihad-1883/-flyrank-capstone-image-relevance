@@ -93,9 +93,8 @@ async function runEvaluation() {
 
     for (const testCase of EVAL_SET) {
         const postId = await createPost(testCase.title, testCase.body);
-        const candidates = await suggestImagesForPost(postId, 5);
-
-        const top1 = candidates[0];
+        const response = await suggestImagesForPost(postId, 5);
+        const top1 = response.suggestions[0];
 
         let isCorrect = false;
         let details = '';

@@ -41,3 +41,10 @@ export interface SuggestionCandidateResponse {
     status: 'MATCHED' | 'REJECTED';
     rejection_reason?: string | null;
 }
+
+export interface SuggestionResponseEnvelope {
+    post_id: number;
+    has_confident_match: boolean;
+    message: string;
+    suggestions: SuggestionCandidateResponse[];
+}
