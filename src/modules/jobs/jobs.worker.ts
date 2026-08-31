@@ -22,6 +22,7 @@ export async function processNextJob(): Promise<boolean> {
     FROM image_jobs j
     JOIN images i ON i.id = j.image_id
     WHERE j.status = 'pending' AND j.job_type = 'vision_tagging'
+    ORDER BY j.retries ASC, j.id ASC
     LIMIT 1
   `);
 
@@ -89,10 +90,15 @@ export async function processNextJob(): Promise<boolean> {
                 [newRetries, errorMessage, job.job_id]
             );
             console.log(`Retry ${newRetries}/${MAX_RETRIES} for image ${job.image_id}`);
+            await delay(10000);
         }
     }
 
     return true;
+}
+
+function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function processAllPendingJobs() {
@@ -101,7 +107,10 @@ export async function processAllPendingJobs() {
 
     while (processed) {
         processed = await processNextJob();
-        if (processed) count++;
+        if (processed) {
+            count++;
+            await delay(4000);
+        }
     }
 
     console.log(`Finished. Processed ${count} job(s). No more pending jobs.`);

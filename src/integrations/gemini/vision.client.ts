@@ -8,6 +8,7 @@
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { GEMINI_MODELS } from './gemini.config.js';
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ export async function tagImageWithGemini(imagePath: string): Promise<VisionResul
     const base64Image = imageBytes.toString('base64');
 
     const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: GEMINI_MODELS.vision,
         contents: [
             {
                 role: 'user',

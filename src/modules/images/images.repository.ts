@@ -5,6 +5,8 @@
  * querying image records, filtering by flags).
  */
 
+import { pool } from "../../db/pool.js";
+
 export async function insertImage(client: any, fileName: string, filePath: string) {
     const result = await client.query(
         `INSERT INTO images (filename, file_path, status)

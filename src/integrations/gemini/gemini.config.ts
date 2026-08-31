@@ -4,7 +4,7 @@
  */
 
 export const GEMINI_MODELS = {
-    vision: 'gemini-flash-latest',
+    vision: 'gemini-flash-lite-latest', // switched from gemini-flash-latest — much higher free-tier RPD
     embedding: 'gemini-embedding-001',
 } as const;
 
