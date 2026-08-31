@@ -17,6 +17,7 @@ build/
 *.sqlite
 *.db
 *.sqlite3
+uploads/
 
 # Logs & Coverage
 *.log
