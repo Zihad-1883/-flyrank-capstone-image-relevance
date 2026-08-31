@@ -1,7 +1,12 @@
 /**
  * Gemini Configuration
- * pricing per 1k tokens for cost tracking, and default parameters.
+ * Gemini API models and pricing per 1k tokens for cost tracking, and default parameters.
  */
+
+export const GEMINI_MODELS = {
+    vision: 'gemini-flash-latest',
+    embedding: 'gemini-embedding-001',
+} as const;
 
 const COST_PER_MILLION_TOKENS = 0.30;
 

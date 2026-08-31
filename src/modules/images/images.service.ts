@@ -6,7 +6,7 @@
  */
 
 import { pool } from "../../db/pool.js";
-import { insertImage, insertImageJob } from "./images.repository.js";
+import { findAllImages, findImageById, insertImage, insertImageJob } from "./images.repository.js";
 
 export async function createImageWithJob(filename: string, filePath: string) {
     const client = await pool.connect();
@@ -27,3 +27,10 @@ export async function createImageWithJob(filename: string, filePath: string) {
     }
 }
 
+export async function listImages() {
+    return findAllImages();
+}
+
+export async function getImageById(id: number) {
+    return findImageById(id);
+}

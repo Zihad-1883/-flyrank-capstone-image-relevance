@@ -6,11 +6,13 @@
  * updates DB records, and flags low-confidence images.
  */
 
-import { pool } from "../../db/pool.js";
-import { estimateCost } from "../../integrations/gemini/gemini.config.js";
-import { tagImageWithGemini } from "../../integrations/gemini/vision.client.js";
-import { logCost } from "../costs/costs.repository.js";
-import { parseAndValidateTag } from "../images/images.schema.js";
+import { pool } from '../../db/pool.js';
+import { tagImageWithGemini } from '../../integrations/gemini/vision.client.js';
+import { generateEmbedding } from '../../integrations/gemini/embeddings.client.js';
+import { parseAndValidateTag } from '../images/images.schema.js';
+import { estimateCost } from '../../integrations/gemini/gemini.config.js';
+import { logCost } from '../costs/costs.repository.js';
+import pgvector from 'pgvector/pg';
 
 const MAX_RETRIES = 3;
 
@@ -32,15 +34,44 @@ export async function processNextJob(): Promise<boolean> {
     await pool.query(`UPDATE image_jobs SET status = 'processing' WHERE id = $1`, [job.job_id]);
 
     try {
+        // Step 1: Vision tagging
         const visionResult = await tagImageWithGemini(job.file_path);
-        const tag = parseAndValidateTag(visionResult.text);
 
-        const cost = estimateCost(visionResult.tokensUsed);
-        await logCost('vision_tagging', job.image_id, visionResult.tokensUsed, cost);
+        const visionCost = estimateCost(visionResult.tokensUsed);
+        await logCost('vision_tagging', job.image_id, visionResult.tokensUsed, visionCost);
+
+        const tag = parseAndValidateTag(visionResult.text);
 
         if (!tag) {
             throw new Error('Invalid or unparseable AI response');
         }
+
+        // Step 2: Generate embedding from the caption
+        const embeddingResult = await generateEmbedding(tag.caption);
+
+        const embeddingCost = estimateCost(embeddingResult.tokensUsed);
+        await logCost('embedding', job.image_id, embeddingResult.tokensUsed, embeddingCost);
+
+        // Step 3: Save everything together
+        await pool.query(
+            `UPDATE images 
+       SET subject = $1, category = $2, attributes = $3, caption = $4, confidence = $5, 
+           embedding = $6, status = 'processed'
+       WHERE id = $7`,
+            [
+                tag.subject,
+                tag.category,
+                tag.attributes,
+                tag.caption,
+                tag.confidence,
+                pgvector.toSql(embeddingResult.embedding),
+                job.image_id,
+            ]
+        );
+
+        await pool.query(`UPDATE image_jobs SET status = 'done' WHERE id = $1`, [job.job_id]);
+
+        console.log(`Processed image ${job.image_id}: ${tag.subject}`);
     } catch (err) {
         const newRetries = (job.retries ?? 0) + 1;
         const errorMessage = (err as Error).message;
@@ -50,19 +81,18 @@ export async function processNextJob(): Promise<boolean> {
                 `UPDATE image_jobs SET status = 'failed', retries = $1, error_message = $2 WHERE id = $3`,
                 [newRetries, errorMessage, job.job_id]
             );
-
             await pool.query(`UPDATE images SET status = 'flagged' WHERE id = $1`, [job.image_id]);
-            console.log(`🚩 Flagged image ${job.image_id} after ${newRetries} failed attempts`);
-        }
-        else {
+            console.log(`Flagged image ${job.image_id} after ${newRetries} failed attempts`);
+        } else {
             await pool.query(
                 `UPDATE image_jobs SET status = 'pending', retries = $1, error_message = $2 WHERE id = $3`,
                 [newRetries, errorMessage, job.job_id]
             );
-            console.log(` Retry ${newRetries}/${MAX_RETRIES} for image ${job.image_id}`);
+            console.log(`Retry ${newRetries}/${MAX_RETRIES} for image ${job.image_id}`);
         }
     }
-    return true
+
+    return true;
 }
 
 export async function processAllPendingJobs() {

@@ -6,7 +6,7 @@
  */
 
 import { Request, Response } from 'express';
-import { createImageWithJob } from './images.service.js';
+import { createImageWithJob, getImageById, listImages } from './images.service.js';
 
 export async function uploadImage(req: Request, res: Response) {
     try {
@@ -27,4 +27,17 @@ export async function uploadImage(req: Request, res: Response) {
                 details: (err as Error).message
             });
     }
+}
+
+export async function getImages(req: Request, res: Response) {
+    const images = await listImages();
+    res.json(images);
+}
+
+export async function getImage(req: Request, res: Response) {
+    const image = await getImageById(Number(req.params.id));
+    if (!image) {
+        return res.status(404).json({ error: 'Image not found' });
+    }
+    res.json(image);
 }

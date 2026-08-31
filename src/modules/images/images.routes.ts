@@ -7,11 +7,13 @@
 
 import { Router } from "express";
 import { upload } from "../../shared/middleware/upload.middleware.js";
-import { uploadImage } from "./images.controller.js";
+import { getImages, getImage, uploadImage } from "./images.controller.js";
 
 
 const imageRouter = Router();
 
 imageRouter.post("/upload", upload.single("image"), uploadImage);
+imageRouter.get("/", getImages);
+imageRouter.get("/:id", getImage);
 
 export default imageRouter;

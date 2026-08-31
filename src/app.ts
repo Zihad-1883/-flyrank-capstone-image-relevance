@@ -10,6 +10,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 import imageRouter from './modules/images/images.routes.js';
+import postsRouter from './modules/posts/posts.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -32,5 +33,6 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/images', imageRouter);
+app.use('/posts', postsRouter);
 
 export default app;

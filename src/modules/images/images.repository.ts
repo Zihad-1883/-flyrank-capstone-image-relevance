@@ -24,3 +24,12 @@ export async function insertImageJob(client: any, imageId: number, jobType: stri
     );
 }
 
+export async function findAllImages() {
+    const result = await pool.query('SELECT * FROM images ORDER BY created_at DESC');
+    return result.rows;
+}
+
+export async function findImageById(id: number) {
+    const result = await pool.query('SELECT * FROM images WHERE id = $1', [id]);
+    return result.rows[0] ?? null;
+}
