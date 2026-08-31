@@ -11,6 +11,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 import imageRouter from './modules/images/images.routes.js';
 import postsRouter from './modules/posts/posts.routes.js';
+import suggestionsRouter from './modules/suggestions/suggestions.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -34,5 +35,6 @@ app.get('/health', (req, res) => {
 
 app.use('/images', imageRouter);
 app.use('/posts', postsRouter);
+app.use('/suggestions', suggestionsRouter);
 
 export default app;
